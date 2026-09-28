@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeCare | AI-powered PPE Compliance Monitoring</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard_safecare.css">
+</head>
+<body class="safecare-body">
+  <!-- SafeCare Main Layout -->
+  <div class="safecare-app">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="safecare-sidebar">
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-cross">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SafeCare</span>
+          <span class="brand-sub">PPE Monitoring System</span>
+        </div>
+      </div>
+
+      <!-- Nav Menu -->
+      <nav class="sidebar-menu">
+        <a href="/" class="menu-item active">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="/departments" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+          </svg>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="#cameras-section" class="menu-item" onclick="scrollToCameras()">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          <span>Cameras</span>
+        </a>
+        <a href="/zones" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
+          </svg>
+          <span>Areas &amp; Policies</span>
+        </a>
+        <a href="/incidents" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg>
+          <span>Incidents</span>
+          <span class="menu-badge" id="sidebar-incident-badge">3</span>
+        </a>
+        <a href="/analytics" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+          </svg>
+          <span>Reports</span>
+        </a>
+        <a href="#" class="menu-item" onclick="openCameraModal()">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="footer-hospital-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-3H7v-2h3V9h2v3h3v2h-3v3z"/>
+          </svg>
+        </div>
+        <div class="footer-tagline">
+          <span>Safer People</span>
+          <span>Healthier Tomorrow</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="safecare-main">
+      
+      <!-- TOP HEADER BAR -->
+      <header class="safecare-topbar">
+        <div class="topbar-title-area">
+          <h1 class="hospital-name">{{ hospital_name }}</h1>
+          <span class="breadcrumb-sep">&gt;</span>
+          <span class="hospital-sub">AI-powered PPE Compliance Monitoring</span>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Live Date & Clock -->
+          <div class="topbar-clock" id="live-clock">
+            Tue, 15 Apr 2025 11:42:18 AM
+          </div>
+
+          <!-- Notification Bell -->
+          <a href="/incidents" class="topbar-notif-btn" title="View Active Incidents">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span class="notif-badge" id="topbar-notif-count">3</span>
+          </a>
+
+          <!-- User Profile -->
+          <div class="topbar-user">
+            <div class="user-avatar">AS</div>
+            <div class="user-meta">
+              <span class="user-name">Admin</span>
+              <span class="user-role">Hospital Administrator</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 5 TOP KPI METRIC CARDS -->
+      <section class="safecare-metrics">
+        <!-- 1. People Monitored -->
+        <div class="kpi-card kpi-blue">
+          <div class="kpi-icon-wrap blue-bg">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-people">12</span>
+            <span class="kpi-label">People Currently Monitored</span>
+          </div>
+        </div>
+
+        <!-- 2. Compliant -->
+        <div class="kpi-card kpi-green">
+          <div class="kpi-icon-wrap green-bg">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+            </svg>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-compliant">9</span>
+            <span class="kpi-label">Compliant</span>
+          </div>
+        </div>
+
+        <!-- 3. Non-Compliant -->
+        <div class="kpi-card kpi-red">
+          <div class="kpi-icon-wrap red-bg">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-non-compliant">3</span>
+            <span class="kpi-label">Non-Compliant</span>
+          </div>
+        </div>
+
+        <!-- 4. Active Cameras -->
+        <div class="kpi-card kpi-blue-cam">
+          <div class="kpi-icon-wrap blue-cam-bg">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+            </svg>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-cameras">4</span>
+            <span class="kpi-label">Active Cameras</span>
+          </div>
+        </div>
+
+        <!-- 5. Total Incidents Today -->
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-icon-wrap purple-bg">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-value" id="kpi-incidents">27</span>
+            <span class="kpi-label">Total Incidents (Today)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- WARD & CLINICAL MONITORING SECTIONS TABS -->
+      <section class="ward-tabs-bar">
+        <div class="ward-tabs-scroll">
+          {% for dept in departments %}
+          <button class="ward-tab-btn {% if default_dept and dept.id == default_dept.id %}active{% endif %}" 
+                  id="ward-tab-{{ dept.id }}"
+                  data-dept-id="{{ dept.id }}"
+                  onclick="selectDepartment('{{ dept.id }}')">
+            <span class="ward-tab-icon">
+              {% if dept.id == 'icu' %}🏥{% elif dept.id == 'gw' %}🩺{% elif dept.id == 'opd' %}🚪{% elif dept.id == 'or' %}🔬{% else %}📍{% endif %}
+            </span>
+            <div class="ward-tab-text">
+              <span class="ward-tab-title">{{ dept.name }}</span>
+              <span class="ward-tab-code">{{ dept.code }}</span>
+            </div>
+            <span class="ward-live-dot"></span>
+            <span class="ward-status-pill" id="ward-pill-{{ dept.id }}">MONITORING</span>
+          </button>
+          {% endfor %}
+          <button class="ward-tab-btn ward-tab-grid" id="ward-tab-grid" onclick="toggleMultiWardGrid()">
+            <span class="ward-tab-icon">🪟</span>
+            <div class="ward-tab-text">
+              <span class="ward-tab-title">All Wards</span>
+              <span class="ward-tab-code">4-Camera Grid</span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- MULTI-WARD 4-CAMERA GRID (Toggled via All Wards tab) -->
+      <div class="multi-ward-grid-wrapper" id="multi-ward-grid-section">
+        {% for dept in departments %}
+        <div class="ward-tile-card">
+          <div class="ward-tile-header">
+            <div class="ward-tile-title-group">
+              <span class="ward-live-dot"></span>
+              <span class="ward-tile-title">{{ dept.name }}</span>
+              <span class="ward-tile-code">{{ dept.code }}</span>
+            </div>
+            <button class="btn-focus-ward" onclick="focusWard('{{ dept.id }}')">Focus Ward &rarr;</button>
+          </div>
+          <div class="ward-tile-video-wrap">
+            <img src="/departments/{{ dept.id }}/video_feed" alt="{{ dept.name }} Camera Stream" loading="lazy">
+          </div>
+          <div class="ward-tile-footer">
+            <span style="font-size: 0.72rem; color: var(--safecare-text-sub);">Policy: {{ dept.required_ppe | join(', ') | replace('_', ' ') | title }}</span>
+            <span class="ward-status-pill" id="grid-status-{{ dept.id }}">ACTIVE</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- 3-COLUMN CONTROL ROOM GRID -->
+      <div class="safecare-grid" id="safecare-single-grid">
+        
+        <!-- COLUMN 1: CAMERAS LIST -->
+        <div class="panel-cameras" id="cameras-section">
+          <div class="panel-header">
+            <h2 class="panel-title">Cameras</h2>
+            <button class="btn-add-camera" onclick="openAddCameraModal()">+ Add Camera</button>
+          </div>
+
+          <div class="cameras-list" id="cameras-list-container">
+            {% for dept in departments %}
+            <div class="camera-item {% if default_dept and dept.id == default_dept.id %}active{% endif %}" 
+                 data-dept-id="{{ dept.id }}" 
+                 data-dept-code="{{ dept.code }}" 
+                 data-dept-name="{{ dept.name }}"
+                 data-required-ppe="{{ dept.required_ppe | join(',') }}"
+                 onclick="selectDepartment('{{ dept.id }}')">
+              <div class="camera-item-left">
+                <span class="camera-status-dot"></span>
+                <div class="camera-info">
+                  <span class="camera-code">{{ dept.code }}</span>
+                  <span class="camera-area">{{ dept.name }}</span>
+                </div>
+              </div>
+              <span class="camera-live-tag">Live</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- COLUMN 2: CENTER LIVE VIEW + AREA POLICY + RECENT INCIDENTS -->
+        <div class="panel-center">
+          
+          <!-- Live Feed Box -->
+          <div class="live-feed-card">
+            <div class="feed-header">
+              <div class="feed-header-left">
+                <h2 class="feed-title" id="active-feed-title">
+                  Live Feed &mdash; <span id="active-camera-code">{{ default_dept.code if default_dept else 'ICU-01' }}</span>
+                  <span class="feed-dept-tag" id="active-feed-dept-name">{{ default_dept.name if default_dept else 'ICU' }}</span>
+                </h2>
+                <span class="ai-backend-badge">
+                  <span class="ai-sparkle">⚡</span> YOLOv8 + SOTA DL
+                </span>
+              </div>
+              <div class="feed-header-right">
+                <button class="btn-change-video" onclick="openInsertVideoModal()" title="Insert video or switch video stream for this ward">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4zM14 13h-3v3H9v-3H6v-2h3V8h2v3h3v2z"/>
+                  </svg>
+                  <span>Insert / Change Video</span>
+                </button>
+                <div class="feed-badge-live">
+                  <span class="live-pulse-dot"></span>
+                  <span>LIVE</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="feed-video-wrapper">
+              <img id="main-live-video" 
+                   src="/departments/{{ default_dept.id if default_dept else 'icu' }}/video_feed" 
+                   alt="Live Clinical Area Surveillance">
+              <div class="feed-overlay-timestamp" id="video-overlay-timestamp">
+                15 Apr 2025 11:42:18 <span id="video-overlay-code">{{ default_dept.code if default_dept else 'ICU-01' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Area Policy Bar -->
+          <div class="area-policy-card">
+            <div class="policy-header">
+              <div class="policy-title-wrap">
+                <span class="policy-prefix">Area Policy &mdash;</span>
+                <span class="policy-area-name" id="active-policy-area">{{ default_dept.name if default_dept else 'ICU' }}</span>
+              </div>
+              <button class="btn-edit-policy" onclick="openEditPolicyModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+                <span>Edit Policy</span>
+              </button>
+            </div>
+
+            <div class="policy-pills-row">
+              <span class="policy-label">Required PPE:</span>
+              <div class="policy-pills-container" id="active-policy-pills">
+                <!-- Injected dynamically via JS / Jinja -->
+                {% for ppe in (default_dept.required_ppe if default_dept else ['face_mask', 'gloves', 'gown', 'eye_protection', 'head_cover']) %}
+                <span class="ppe-pill-badge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  </svg>
+                  <span>{{ ppe.replace('_', ' ').title() }}</span>
+                </span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Incidents Table Box -->
+          <div class="recent-incidents-card">
+            <div class="incidents-header">
+              <h2 class="incidents-title">Recent Incidents</h2>
+              <a href="/incidents" class="incidents-view-all">View All &gt;</a>
+            </div>
+
+            <div class="incidents-table-wrapper">
+              <table class="safecare-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Time</th>
+                    <th>Camera</th>
+                    <th>Area</th>
+                    <th>Violation</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-incidents-tbody">
+                  <!-- Sample / dynamic incidents matching mockup -->
+                  <tr>
+                    <td class="font-mono">INC-1027</td>
+                    <td class="text-dim">11:42:16</td>
+                    <td>ICU-01</td>
+                    <td>ICU</td>
+                    <td>Missing Eye Protection</td>
+                    <td><span class="tag-status tag-open">Open</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-mono">INC-1026</td>
+                    <td class="text-dim">11:38:04</td>
+                    <td>OR-01</td>
+                    <td>Operating Room</td>
+                    <td>Missing Gloves</td>
+                    <td><span class="tag-status tag-open">Open</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-mono">INC-1025</td>
+                    <td class="text-dim">11:25:19</td>
+                    <td>GW-01</td>
+                    <td>General Ward</td>
+                    <td>Missing Mask</td>
+                    <td><span class="tag-status tag-resolved">Resolved</span></td>
+                  </tr>
+                  <tr>
+                    <td class="font-mono">INC-1024</td>
+                    <td class="text-dim">11:12:03</td>
+                    <td>OPD-01</td>
+                    <td>OPD</td>
+                    <td>No Mask</td>
+                    <td><span class="tag-status tag-resolved">Resolved</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUMN 3: PERSON DETAILS & COMPLIANCE TREND -->
+        <div class="panel-right">
+          
+          <!-- Person Details Box -->
+          <div class="person-details-card">
+            <div class="person-header">
+              <h2 class="person-title">Person Details</h2>
+              <div class="person-pagination">
+                <button class="pag-btn" id="person-prev-btn" onclick="prevPerson()">&lt;</button>
+                <span class="pag-label" id="person-pag-label">Person 1 of 2</span>
+                <button class="pag-btn" id="person-next-btn" onclick="nextPerson()">&gt;</button>
+              </div>
+            </div>
+
+            <div class="person-profile-row">
+              <!-- Thumbnail Crop -->
+              <div class="person-crop-box">
+                <img id="person-crop-img" src="/static/img/person_sample.jpg" alt="Tracked Person" onerror="this.src='/static/img/avatar_placeholder.svg'">
+              </div>
+
+              <!-- Metadata Table -->
+              <div class="person-meta-table">
+                <div class="meta-row">
+                  <span class="meta-k">Person ID</span>
+                  <span class="meta-v" id="p-id">01</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-k">Location</span>
+                  <span class="meta-v" id="p-location">ICU-01 (ICU)</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-k">Time Detected</span>
+                  <span class="meta-v" id="p-time">11:42:16 AM</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-k">Duration</span>
+                  <span class="meta-v" id="p-duration">00:00:12</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PPE Detection Checklist -->
+            <div class="ppe-checklist-section">
+              <h3 class="checklist-title">PPE Detection</h3>
+              <div class="checklist-items" id="ppe-checklist-container">
+                <!-- Mask -->
+                <div class="checklist-row">
+                  <div class="chk-left">
+                    <span class="chk-icon">😷</span>
+                    <span class="chk-name">Mask</span>
+                  </div>
+                  <div class="chk-right">
+                    <span class="chk-status-icon green-icon">✔</span>
+                    <span class="chk-text green-text" id="chk-mask-val">Detected (98%)</span>
+                  </div>
+                </div>
+
+                <!-- Gloves -->
+                <div class="checklist-row">
+                  <div class="chk-left">
+                    <span class="chk-icon">🧤</span>
+                    <span class="chk-name">Gloves</span>
+                  </div>
+                  <div class="chk-right">
+                    <span class="chk-status-icon green-icon">✔</span>
+                    <span class="chk-text green-text" id="chk-gloves-val">Detected (95%)</span>
+                  </div>
+                </div>
+
+                <!-- Gown -->
+                <div class="checklist-row">
+                  <div class="chk-left">
+                    <span class="chk-icon">🥼</span>
+                    <span class="chk-name">Gown</span>
+                  </div>
+                  <div class="chk-right">
+                    <span class="chk-status-icon green-icon">✔</span>
+                    <span class="chk-text green-text" id="chk-gown-val">Detected (92%)</span>
+                  </div>
+                </div>
+
+                <!-- Eye Protection -->
+                <div class="checklist-row">
+                  <div class="chk-left">
+                    <span class="chk-icon">🥽</span>
+                    <span class="chk-name">Eye Protection</span>
+                  </div>
+                  <div class="chk-right">
+                    <span class="chk-status-icon red-icon">✖</span>
+                    <span class="chk-text red-text" id="chk-eye-val">Not Detected</span>
+                  </div>
+                </div>
+
+                <!-- Head Cover -->
+                <div class="checklist-row">
+                  <div class="chk-left">
+                    <span class="chk-icon">🧢</span>
+                    <span class="chk-name">Head Cover</span>
+                  </div>
+                  <div class="chk-right">
+                    <span class="chk-status-icon green-icon">✔</span>
+                    <span class="chk-text green-text" id="chk-head-val">Detected (90%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Compliance Status Banner -->
+            <div class="person-compliance-banner banner-non-compliant" id="person-status-banner">
+              <svg class="banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+              </svg>
+              <div class="banner-text">
+                <span class="banner-state" id="banner-state-text">NON-COMPLIANT</span>
+                <span class="banner-desc" id="banner-desc-text">Missing: Eye Protection</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compliance Trend (Today) Box -->
+          <div class="trend-card">
+            <div class="trend-header">
+              <h2 class="trend-title">Compliance Trend (Today)</h2>
+              <select class="trend-area-select" id="trend-area-select" onchange="updateTrendChart()">
+                <option value="all">All Areas</option>
+                <option value="opd">OPD</option>
+                <option value="gw">General Ward</option>
+                <option value="icu">ICU</option>
+                <option value="or">Operating Room</option>
+              </select>
+            </div>
+
+            <div class="trend-legend">
+              <span class="legend-item"><span class="legend-dot dot-compliant"></span> Compliant</span>
+              <span class="legend-item"><span class="legend-dot dot-non-compliant"></span> Non-Compliant</span>
+            </div>
+
+            <!-- Chart Canvas -->
+            <div class="trend-chart-wrapper">
+              <canvas id="compliance-trend-canvas" width="340" height="150"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- EDIT POLICY MODAL -->
+  <div class="modal-backdrop" id="edit-policy-modal">
+    <div class="modal-content safecare-modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="policy-modal-title">Edit Area Policy</h3>
+        <button class="modal-close" onclick="closeEditPolicyModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+          Select the mandatory PPE items required for this clinical area. Only selected items will be enforced.
+        </p>
+
+        <div class="policy-checkbox-grid">
+          <label class="policy-check-item">
+            <input type="checkbox" id="pol-chk-mask" value="face_mask">
+            <span>Face Mask (Surgical / N95)</span>
+          </label>
+          <label class="policy-check-item">
+            <input type="checkbox" id="pol-chk-gloves" value="gloves">
+            <span>Medical Nitrile Gloves</span>
+          </label>
+          <label class="policy-check-item">
+            <input type="checkbox" id="pol-chk-gown" value="gown">
+            <span>Isolation / Surgical Gown</span>
+          </label>
+          <label class="policy-check-item">
+            <input type="checkbox" id="pol-chk-eye" value="eye_protection">
+            <span>Eye Protection / Shield</span>
+          </label>
+          <label class="policy-check-item">
+            <input type="checkbox" id="pol-chk-head" value="head_cover">
+            <span>Bouffant / Head Cover</span>
+          </label>
+          <label class="policy-check-item">
+            <input type="checkbox" id="pol-chk-shoes" value="shoe_covers">
+            <span>Shoe Covers</span>
+          </label>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <label style="font-size: 0.82rem; color: var(--text-secondary); display: block; margin-bottom: 0.3rem;">
+            Grace Period (Seconds):
+          </label>
+          <input type="number" id="pol-grace-input" class="text-input" min="0" max="30" step="0.5" value="3.0" style="width: 120px;">
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="closeEditPolicyModal()">Cancel</button>
+        <button class="btn btn-primary" style="background: var(--accent-blue);" onclick="saveAreaPolicy()">Save Policy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CAMERA MODAL -->
+  <div class="modal-backdrop" id="add-camera-modal">
+    <div class="modal-content safecare-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Hospital Camera</h3>
+        <button class="modal-close" onclick="closeAddCameraModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem;">Camera / Stream ID</label>
+            <input type="text" id="add-cam-id" class="text-input" placeholder="e.g. pacu_01" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem;">Clinical Area Name</label>
+            <input type="text" id="add-cam-name" class="text-input" placeholder="e.g. Post-Anesthesia Care Unit (PACU)" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem;">Department Code</label>
+            <input type="text" id="add-cam-code" class="text-input" placeholder="e.g. PACU-01" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-secondary); display: block; margin-bottom: 0.2rem;">Camera Source (RTSP URL, USB Index, or Sample Video)</label>
+            <input type="text" id="add-cam-source" class="text-input" placeholder="rtsp://... or 0 or data/samples/..." style="width: 100%;">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn btn-secondary" onclick="closeAddCameraModal()">Cancel</button>
+        <button class="btn btn-primary" style="background: var(--accent-blue);" onclick="submitAddCamera()">Add Camera</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSERT / CHANGE VIDEO MODAL -->
+  <div class="modal-backdrop" id="insert-video-modal">
+    <div class="modal-content safecare-modal video-modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Insert / Change Video Stream</h3>
+          <span style="font-size: 0.75rem; color: var(--safecare-text-sub);">
+            Target Area: <strong id="insert-modal-dept-title" style="color: var(--safecare-blue-light);">ICU (ICU-01)</strong>
+          </span>
+        </div>
+        <button class="modal-close" onclick="closeInsertVideoModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Modal Tabs Header -->
+        <div class="video-tabs-header">
+          <button class="vtab-btn active" id="vtab-btn-demos" onclick="switchVideoModalTab('demos')">
+            Clinical Demo Videos
+          </button>
+          <button class="vtab-btn" id="vtab-btn-upload" onclick="switchVideoModalTab('upload')">
+            Upload Video File
+          </button>
+          <button class="vtab-btn" id="vtab-btn-webcam" onclick="switchVideoModalTab('webcam')">
+            Live Webcam / RTSP
+          </button>
+        </div>
+
+        <!-- TAB 1: DEMONSTRATION VIDEOS -->
+        <div id="vtab-pane-demos" class="vtab-pane active">
+          <p style="font-size: 0.78rem; color: var(--safecare-text-sub); margin-bottom: 0.8rem;">
+            Select a verified demonstration scenario to evaluate YOLOv8 compliance and violation detection:
+          </p>
+          <div class="demo-videos-list" id="demo-videos-container">
+            <!-- Dynamically populated or rendered -->
+            <div class="demo-video-item">
+              <div class="demo-item-left">
+                <div class="demo-item-badge-row">
+                  <span class="demo-cat-badge badge-green">COMPLIANT DEMO</span>
+                  <span class="demo-item-title">Clinical Worker (Fully Compliant)</span>
+                </div>
+                <span class="demo-item-desc">Staff wearing surgical scrubs, blue surgical mask, nitrile gloves, bouffant cap, and shoe covers.</span>
+              </div>
+              <button class="btn-select-video" onclick="applySampleVideo('data/samples/clinical_person_compliant_scrubs_ppe.mp4')">
+                Apply to Ward
+              </button>
+            </div>
+
+            <div class="demo-video-item">
+              <div class="demo-item-left">
+                <div class="demo-item-badge-row">
+                  <span class="demo-cat-badge badge-red">VIOLATION DEMO</span>
+                  <span class="demo-item-title">Civilian in Casual Clothes (Non-Compliant)</span>
+                </div>
+                <span class="demo-item-desc">Visitor in street jacket and jeans with bare face (no mask), bare hands (no gloves), and no cap.</span>
+              </div>
+              <button class="btn-select-video" onclick="applySampleVideo('data/samples/clinical_person_non_compliant_casual.mp4')">
+                Apply to Ward
+              </button>
+            </div>
+
+            <div class="demo-video-item">
+              <div class="demo-item-left">
+                <div class="demo-item-badge-row">
+                  <span class="demo-cat-badge badge-amber">ICU AIIR</span>
+                  <span class="demo-item-title">ICU Isolation Suite Scenario</span>
+                </div>
+                <span class="demo-item-desc">Nurse in Yellow Gown &amp; N95 Mask with an unmasked visitor entering room.</span>
+              </div>
+              <button class="btn-select-video" onclick="applySampleVideo('data/samples/icu_isolation_demo.mp4')">
+                Apply to Ward
+              </button>
+            </div>
+
+            <div class="demo-video-item">
+              <div class="demo-item-left">
+                <div class="demo-item-badge-row">
+                  <span class="demo-cat-badge badge-blue">OPD / TRIAGE</span>
+                  <span class="demo-item-title">Triage Intake Corridor Scenario</span>
+                </div>
+                <span class="demo-item-desc">Emergency patient intake corridor monitoring mask adherence in real-time.</span>
+              </div>
+              <button class="btn-select-video" onclick="applySampleVideo('data/samples/triage_corridor_demo.mp4')">
+                Apply to Ward
+              </button>
+            </div>
+
+            <div class="demo-video-item">
+              <div class="demo-item-left">
+                <div class="demo-item-badge-row">
+                  <span class="demo-cat-badge badge-purple">SURGICAL OR</span>
+                  <span class="demo-item-title">Operating Room Sterile Suite Scenario</span>
+                </div>
+                <span class="demo-item-desc">Surgical team under strict 6-item sterile barrier isolation protocol.</span>
+              </div>
+              <button class="btn-select-video" onclick="applySampleVideo('data/samples/or_surgery_demo.mp4')">
+                Apply to Ward
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: UPLOAD VIDEO FILE -->
+        <div id="vtab-pane-upload" class="vtab-pane" style="display: none;">
+          <div class="upload-drop-area" id="upload-drop-zone" onclick="document.getElementById('file-upload-input').click()">
+            <div class="upload-icon">📁</div>
+            <div class="upload-prompt">Click or drag &amp; drop video file here</div>
+            <div class="upload-formats">Supported formats: MP4, AVI, MOV, MKV, WebM (up to 250 MB)</div>
+            <input type="file" id="file-upload-input" accept=".mp4,.avi,.mov,.mkv,.webm" style="display: none;" onchange="handleVideoFileSelected(event)">
+          </div>
+
+          <div id="upload-progress-container" style="display: none; margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.3rem;">
+              <span id="upload-filename">uploading...</span>
+              <span id="upload-percent">0%</span>
+            </div>
+            <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden;">
+              <div id="upload-progress-bar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.2s;"></div>
+            </div>
+          </div>
+          <div id="upload-status-msg" style="margin-top: 0.75rem; font-size: 0.8rem; display: none;"></div>
+        </div>
+
+        <!-- TAB 3: WEBCAM & RTSP -->
+        <div id="vtab-pane-webcam" class="vtab-pane" style="display: none;">
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div>
+              <label style="font-size: 0.8rem; color: var(--safecare-text-sub); display: block; margin-bottom: 0.3rem;">Select Physical Webcam / Video Device:</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <select id="webcam-device-select" class="text-input" style="flex: 1; padding: 0.45rem; background: #0b1329; border: 1px solid #334155; color: #fff; border-radius: 6px;">
+                  <option value="0">Live Camera / Webcam (Device 0)</option>
+                  <option value="1">External Webcam (Device 1)</option>
+                  <option value="2">Video Capture Card (Device 2)</option>
+                </select>
+                <button class="btn btn-primary" onclick="applyWebcamSource()">Connect Webcam</button>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--safecare-card-border); padding-top: 0.85rem;">
+              <label style="font-size: 0.8rem; color: var(--safecare-text-sub); display: block; margin-bottom: 0.3rem;">Or Enter RTSP / IP Camera URL:</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="rtsp-url-input" class="text-input" placeholder="rtsp://admin:pass@192.168.1.100:554/stream1" style="flex: 1; padding: 0.45rem; background: #0b1329; border: 1px solid #334155; color: #fff; border-radius: 6px;">
+                <button class="btn btn-primary" onclick="applyRtspSource()">Connect RTSP</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem; border-top: 1px solid var(--safecare-card-border); padding-top: 0.85rem;">
+        <button class="btn btn-secondary" onclick="closeInsertVideoModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

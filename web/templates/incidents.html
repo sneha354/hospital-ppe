@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital PPE Compliance Monitor | Incident Audit Log</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-new {
+      background: rgba(239, 68, 68, 0.25);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .status-acknowledged {
+      background: rgba(59, 130, 246, 0.25);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    .status-resolved {
+      background: rgba(34, 197, 94, 0.25);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .status-false_positive {
+      background: rgba(156, 163, 175, 0.25);
+      color: #d1d5db;
+      border: 1px solid rgba(156, 163, 175, 0.4);
+    }
+    .status-under_review {
+      background: rgba(168, 85, 247, 0.25);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+    .action-btn {
+      padding: 0.2rem 0.45rem;
+      font-size: 0.72rem;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      background: var(--bg-primary);
+      border-color: var(--accent-blue);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-title">Hospital PPE Compliance AI</div>
+        <div class="brand-subtitle">Incident Audit &amp; Violation Lifecycle</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Live Monitor</a>
+      <a href="/departments" class="nav-link">Department Wall</a>
+      <a href="/zones" class="nav-link">Zone Policies</a>
+      <a href="/incidents" class="nav-link active">Incident Log</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Privacy & Compliance Banner -->
+    <div style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: #93c5fd;">
+        <span>🔒</span>
+        <span><strong>HIPAA / Clinical Privacy Protection Active:</strong> Personnel facial identities are automatically blurred on all violation evidence snapshots.</span>
+      </div>
+      <button id="cleanup-btn" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">Enforce Data Retention</button>
+    </div>
+
+    <div class="card-header" style="background: var(--bg-card); border-radius: 10px 10px 0 0; margin-bottom: 0;">
+      <div class="card-title">Recorded PPE Non-Compliance Incidents (Episode-Based)</div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <input type="text" id="incident-search" class="text-input" placeholder="Search zone, ID, or item..." style="width: 220px;">
+        <select id="severity-filter" class="select-input">
+          <option value="ALL">All Severities</option>
+          <option value="CRITICAL">CRITICAL</option>
+          <option value="WARNING">WARNING</option>
+          <option value="INFO">INFO</option>
+        </select>
+        <select id="status-filter" class="select-input">
+          <option value="ALL">All Statuses</option>
+          <option value="NEW">NEW</option>
+          <option value="ACKNOWLEDGED">ACKNOWLEDGED</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="FALSE_POSITIVE">FALSE POSITIVE</option>
+        </select>
+        <button id="export-csv-btn" class="btn btn-secondary">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="video-card" style="border-radius: 0 0 10px 10px; border-top: none;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Episode ID</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+            <th>Zone</th>
+            <th>Severity</th>
+            <th>Staff Track</th>
+            <th>Violations &amp; Missing PPE</th>
+            <th>Duration</th>
+            <th>Actions / Evidence</th>
+          </tr>
+        </thead>
+        <tbody id="incidents-table-body">
+          {% for inc in incidents %}
+          <tr id="row-{{ inc.id }}">
+            <td style="font-family: monospace; font-weight: 600; font-size: 0.8rem;">{{ inc.id }}</td>
+            <td>
+              <span class="status-badge status-{{ inc.status|lower }}">{{ inc.status }}</span>
+            </td>
+            <td style="color: var(--text-secondary); font-size: 0.78rem;">{{ inc.timestamp[:19].replace('T', ' ') }}</td>
+            <td><span class="zone-chip" style="background: rgba(255,255,255,0.1);">{{ inc.zone_code }}</span> {{ inc.zone_name }}</td>
+            <td>
+              {% if inc.severity == 'CRITICAL' %}
+                <span style="color: var(--status-violation); font-weight: 700;">CRITICAL</span>
+              {% elif inc.severity == 'WARNING' %}
+                <span style="color: var(--status-grace); font-weight: 700;">WARNING</span>
+              {% else %}
+                <span style="color: var(--accent-cyan); font-weight: 700;">INFO</span>
+              {% endif %}
+            </td>
+            <td>#{{ inc.track_id }}</td>
+            <td>
+              {% for m in inc.missing_items %}
+                <span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 0.12rem 0.35rem; border-radius: 4px; font-size: 0.72rem; margin-right: 0.25rem;">
+                  - {{ m }}
+                </span>
+              {% endfor %}
+              {% for imp in inc.improper_items %}
+                <span style="background: rgba(245, 158, 11, 0.2); color: #fcd34d; padding: 0.12rem 0.35rem; border-radius: 4px; font-size: 0.72rem; margin-right: 0.25rem;">
+                  ! {{ imp }}
+                </span>
+              {% endfor %}
+            </td>
+            <td>{{ "%.1f"|format(inc.duration_seconds if inc.duration_seconds > 0 else inc.dwell_seconds) }}s</td>
+            <td>
+              <div style="display: flex; gap: 0.3rem; align-items: center;">
+                {% if inc.snapshot_filename %}
+                  <button class="action-btn" onclick="openSnapshotModal('{{ inc.id }}', '{{ inc.snapshot_filename }}', '{{ inc.zone_name }}', '{{ inc.details }}', '{{ inc.status }}')">
+                    Snapshot
+                  </button>
+                {% endif %}
+                {% if inc.status == 'NEW' %}
+                  <button class="action-btn" style="color: #93c5fd;" onclick="updateStatus('{{ inc.id }}', 'ACKNOWLEDGED')">Ack</button>
+                {% endif %}
+                {% if inc.status != 'RESOLVED' %}
+                  <button class="action-btn" style="color: #86efac;" onclick="updateStatus('{{ inc.id }}', 'RESOLVED')">Resolve</button>
+                {% endif %}
+                {% if inc.status != 'FALSE_POSITIVE' %}
+                  <button class="action-btn" style="color: #d1d5db;" onclick="updateStatus('{{ inc.id }}', 'FALSE_POSITIVE')">False Pos</button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+              No PPE violations recorded yet. All designated hospital zones are compliant.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Snapshot Viewer Modal -->
+  <div class="modal-backdrop" id="snapshot-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="card-title" id="modal-title">Incident Evidence Snapshot</div>
+        <button class="modal-close" onclick="closeSnapshotModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <img id="modal-img" src="" alt="Incident Snapshot" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border-color);">
+        </div>
+        <div id="modal-details" style="font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-primary); padding: 0.85rem; border-radius: 6px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/incidents.js"></script>
+</body>
+</html>

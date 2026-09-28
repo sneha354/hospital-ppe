@@ -1,0 +1,88 @@
+# Hospital Clinical Departments and Infection Control PPE Matrix
+# Aligned with SafeCare Hospital Monitoring Specification
+
+departments:
+  - id: "opd"
+    name: "OPD"
+    code: "OPD-01"
+    building: "Ambulatory Care Center"
+    floor: "Ground Floor"
+    risk_level: "MEDIUM"
+    camera_source: "data/samples/triage_corridor_demo.mp4"
+    camera_type: "ENTRANCE_CORRIDOR"
+    color: [34, 197, 94] # Green
+    required_ppe:
+      - "face_mask"
+    optional_ppe:
+      - "gloves"
+    grace_period_seconds: 4.0
+    alert_severity: "WARNING"
+    nurse_station_contact: "Ext. 4101 (OPD Triage Desk)"
+    safety_officer_email: "opd_safety@hospital.org"
+    description: "Outpatient Department general intake and consultation area requiring respiratory droplet protection."
+
+  - id: "gw"
+    name: "General Ward"
+    code: "GW-01"
+    building: "Inpatient Pavilion"
+    floor: "2nd Floor"
+    risk_level: "MEDIUM"
+    camera_source: "data/samples/clinical_person_non_compliant_casual.mp4"
+    camera_type: "WARD_CORRIDOR"
+    color: [59, 130, 246] # Blue
+    required_ppe:
+      - "face_mask"
+      - "gloves"
+    optional_ppe:
+      - "gown"
+    grace_period_seconds: 3.5
+    alert_severity: "WARNING"
+    nurse_station_contact: "Ext. 4205 (Ward 2 Central Station)"
+    safety_officer_email: "ward_safety@hospital.org"
+    description: "Inpatient general ward and patient rooms requiring standard contact and droplet precautions."
+
+  - id: "icu"
+    name: "ICU"
+    code: "ICU-01"
+    building: "Critical Care Tower"
+    floor: "4th Floor"
+    risk_level: "HIGH"
+    camera_source: "data/samples/clinical_person_compliant_scrubs_ppe.mp4"
+    camera_type: "ROOM_SURVEILLANCE"
+    color: [239, 68, 68] # Red
+    required_ppe:
+      - "face_mask"
+      - "gloves"
+      - "gown"
+      - "eye_protection"
+      - "head_cover"
+    optional_ppe:
+      - "shoe_covers"
+    grace_period_seconds: 2.5
+    alert_severity: "CRITICAL"
+    nurse_station_contact: "Ext. 4402 (ICU Central Station)"
+    safety_officer_email: "icu_safety@hospital.org"
+    description: "Intensive Care Unit for high-risk pathogen containment and airborne/contact isolation."
+
+  - id: "or"
+    name: "Operating Room"
+    code: "OR-01"
+    building: "Surgical Pavilion"
+    floor: "3rd Floor"
+    risk_level: "CRITICAL"
+    camera_source: "data/samples/or_surgery_demo.mp4"
+    camera_type: "SURGICAL_OVERHEAD"
+    color: [168, 85, 247] # Purple
+    required_ppe:
+      - "face_mask"
+      - "gloves"
+      - "gown"
+      - "eye_protection"
+      - "head_cover"
+      - "shoe_covers"
+    optional_ppe: []
+    grace_period_seconds: 1.5
+    alert_severity: "CRITICAL"
+    nurse_station_contact: "Ext. 4301 (OR Charge Nurse)"
+    safety_officer_email: "infection_control@hospital.org"
+    description: "Sterile surgical suite requiring complete barrier isolation against microbial contamination."

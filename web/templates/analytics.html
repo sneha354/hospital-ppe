@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital PPE Compliance Monitor | Infection Control Analytics</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .chart-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-wrapper {
+      position: relative;
+      height: 280px;
+      width: 100%;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-title">Hospital PPE Compliance AI</div>
+        <div class="brand-subtitle">Infection Control &amp; Safety Analytics</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Live Monitor</a>
+      <a href="/zones" class="nav-link">Zone Policies</a>
+      <a href="/incidents" class="nav-link">Incident Log</a>
+      <a href="/analytics" class="nav-link active">Analytics</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Top Executive Summary Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <span class="metric-label">Hospital Compliance Rate</span>
+        <span class="metric-value">{{ stats.compliance_rate_percent }}%</span>
+        <span class="metric-detail">{{ stats.compliant_evaluations }} compliant checks</span>
+      </div>
+      <div class="metric-card red">
+        <span class="metric-label">Logged Violations</span>
+        <span class="metric-value">{{ stats.total_incidents }}</span>
+        <span class="metric-detail">{{ stats.severity_distribution.get('CRITICAL', 0) }} Critical / {{ stats.severity_distribution.get('WARNING', 0) }} Warning</span>
+      </div>
+      <div class="metric-card blue">
+        <span class="metric-label">Total Surveillance Checks</span>
+        <span class="metric-value">{{ stats.total_evaluations }}</span>
+        <span class="metric-detail">Continuous frame evaluations</span>
+      </div>
+      <div class="metric-card amber">
+        <span class="metric-label">Improper PPE Instances</span>
+        <span class="metric-value">{{ stats.partial_evaluations }}</span>
+        <span class="metric-detail">e.g. Mask on chin / exposed nose</span>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+      <!-- Chart 1: Violations by PPE Category -->
+      <div class="chart-card">
+        <div class="card-title">Missing PPE Distribution by Category</div>
+        <div class="chart-wrapper">
+          <canvas id="items-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Violations by Hospital Zone -->
+      <div class="chart-card">
+        <div class="card-title">Violations by Hospital Department / Zone</div>
+        <div class="chart-wrapper">
+          <canvas id="zones-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 3: Compliance Status Breakdown -->
+      <div class="chart-card">
+        <div class="card-title">Inspection Status Breakdown</div>
+        <div class="chart-wrapper">
+          <canvas id="breakdown-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Severity Distribution -->
+      <div class="chart-card">
+        <div class="card-title">Incident Severity Breakdown</div>
+        <div class="chart-wrapper">
+          <canvas id="severity-chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const analyticsData = {{ stats | tojson }};
+  </script>
+  <script src="/static/js/analytics.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,45 @@
+# Hospital PPE Monitoring System Configuration - Production Settings
+
+system:
+  camera_source: "data/samples/icu_isolation_demo.mp4" # Realistic hospital demo video (also supports "simulation", "0", "rtsp://...")
+  camera_width: 1280
+  camera_height: 720
+  target_fps: 25
+  hospital_name: "Metropolitan General Hospital"
+  facility_id: "MGH-MAIN-01"
+
+# Production Live Camera Ingestion (RTSP, Webcams, IP Cameras)
+live_camera:
+  rtsp_transport: "tcp" # "tcp" or "udp" (TCP prevents packet loss/corruption)
+  buffer_size: 1 # Zero-latency buffer: always retrieve the single newest frame
+  reconnect_interval_sec: 2.0 # Seconds to wait before attempting reconnection
+  max_reconnect_attempts: 15 # Maximum consecutive reconnect attempts before marking OFFLINE
+  connection_timeout_sec: 5.0 # Timeout for initial connection test
+  inference_width: 640 # Downscaled resolution for high-throughput 30+ FPS inference
+  inference_height: 360
+  enable_yunet_deep_learning: true # SOTA OpenCV YuNet Deep Learning face/mask detection
+
+detection:
+  backend: "auto" # Options: "auto", "simulation", "heuristic", "onnx", "yolo"
+  confidence_threshold: 0.50
+  nms_iou_threshold: 0.45
+  model_path: "data/models/yolov8n.pt"
+
+tracking:
+  max_lost_frames: 30 # Number of frames to retain lost tracks
+  iou_threshold: 0.35 # Minimum IoU to associate detection with track
+  temporal_window_frames: 15 # Window size for smoothing compliance states (~0.6s at 25fps)
+  compliance_ratio_threshold: 0.60 # Percentage of frames in window where PPE must be detected
+
+alerts:
+  snapshot_enabled: true
+  snapshot_dir: "data/incidents/snapshots"
+  log_dir: "data/incidents"
+  cooldown_seconds: 10.0 # Min time before logging new incident for same person/violation
+  sound_alert: false # Enable client-side audio beep on critical violations
+  save_annotated_snapshots: true
+
+web:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false

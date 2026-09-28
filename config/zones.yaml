@@ -1,0 +1,131 @@
+zones:
+- id: zone_icu
+  name: ICU Isolation Suite
+  code: ICU-01
+  risk_level: CRITICAL
+  color:
+  - 239
+  - 68
+  - 68
+  polygon:
+  - - 0.05
+    - 0.35
+  - - 0.48
+    - 0.35
+  - - 0.48
+    - 0.95
+  - - 0.05
+    - 0.95
+  required_ppe:
+  - face_mask
+  - gown
+  - gloves
+  - eye_protection
+  optional_ppe:
+  - head_cover
+  - shoe_covers
+  grace_period_seconds: 2.0
+  alert_severity: CRITICAL
+  description: Intensive Care Unit high-acuity zone with airborne and contact isolation
+    mandates.
+- id: zone_or
+  name: Operating Room Active Area
+  code: OR-01
+  risk_level: CRITICAL
+  color:
+  - 168
+  - 85
+  - 247
+  polygon:
+  - - 0.52
+    - 0.35
+  - - 0.95
+    - 0.35
+  - - 0.95
+    - 0.95
+  - - 0.52
+    - 0.95
+  required_ppe:
+  - face_mask
+  - gloves
+  - gown
+  - eye_protection
+  - head_cover
+  - shoe_covers
+  optional_ppe: []
+  grace_period_seconds: 1.5
+  alert_severity: CRITICAL
+  description: Sterile surgical suite requiring complete barrier isolation against
+    microbial contamination.
+- id: zone_triage
+  name: Emergency Triage & Intake
+  code: TR-01
+  risk_level: MEDIUM
+  color:
+  - 59
+  - 130
+  - 246
+  polygon:
+  - - 0.05
+    - 0.05
+  - - 0.48
+    - 0.05
+  - - 0.48
+    - 0.3
+  - - 0.05
+    - 0.3
+  required_ppe:
+  - face_mask
+  optional_ppe:
+  - gloves
+  grace_period_seconds: 3.0
+  alert_severity: WARNING
+  description: Initial clinical intake and patient triage assessment area.
+- id: zone_public
+  name: Public Corridor & Transit
+  code: PUB-01
+  risk_level: LOW
+  color:
+  - 107
+  - 114
+  - 128
+  polygon:
+  - - 0.52
+    - 0.05
+  - - 0.95
+    - 0.05
+  - - 0.95
+    - 0.3
+  - - 0.52
+    - 0.3
+  required_ppe: []
+  optional_ppe:
+  - face_mask
+  grace_period_seconds: 5.0
+  alert_severity: INFO
+  description: General hospital corridor and visitor circulation area.
+ppe_definitions:
+  face_mask:
+    display_name: Face Mask / N95
+    anatomical_anchor: head
+    category: respiratory
+  eye_protection:
+    display_name: Face Shield / Goggles
+    anatomical_anchor: head
+    category: facial
+  head_cover:
+    display_name: Bouffant / Surgical Cap
+    anatomical_anchor: head
+    category: protective_cover
+  gown:
+    display_name: Medical / Isolation Gown
+    anatomical_anchor: torso
+    category: body
+  gloves:
+    display_name: Medical Gloves
+    anatomical_anchor: hands
+    category: extremities
+  shoe_covers:
+    display_name: Shoe Covers
+    anatomical_anchor: feet
+    category: extremities

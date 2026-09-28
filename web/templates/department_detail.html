@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ department.name }} | Department Control Room</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-title">Hospital PPE Compliance AI</div>
+        <div class="brand-subtitle">Department Control Room &bull; {{ department.name }}</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/departments" class="nav-link">Department Wall</a>
+      <a href="/" class="nav-link">Main Control Room</a>
+      <a href="/zones" class="nav-link">Zone Policies</a>
+      <a href="/incidents" class="nav-link">Incident Log</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Breadcrumb & Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <a href="/departments" style="font-size: 0.82rem; color: var(--accent-cyan); text-decoration: none;">&larr; Back to Hospital Department Wall</a>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-top: 0.35rem;">
+          [{{ department.code }}] {{ department.name }}
+        </h1>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+          {{ department.building }} &bull; {{ department.floor }} &bull; Risk: <strong>{{ department.risk_level }}</strong>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Nurse Station Contact:</div>
+        <div style="font-weight: 700; font-size: 0.95rem;">{{ department.nurse_station_contact }}</div>
+      </div>
+    </div>
+
+    <!-- Main Layout: Video + Controls -->
+    <div class="dashboard-layout">
+      <!-- Left: Full Live Video Feed -->
+      <div class="video-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="live-badge"><span class="live-dot"></span> LIVE FEED</span>
+            <span>{{ department.camera_type }} Stream</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-secondary);">
+            Source: {{ department.camera_source }}
+          </div>
+        </div>
+
+        <div class="video-wrapper">
+          <img src="/departments/{{ department.id }}/video_feed" alt="{{ department.name }} Live Feed" class="video-stream" id="dept-stream-img">
+        </div>
+
+        <!-- Camera Ingestion Toolbar -->
+        <div class="stream-controls">
+          <label style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 600;">Bind Live RTSP / IP Camera:</label>
+          <input type="text" id="dept-camera-input" class="text-input" style="flex: 1; min-width: 260px;" placeholder="rtsp://admin:pass@192.168.1.100:554/live" value="{{ department.camera_source }}">
+          <button id="update-dept-camera-btn" class="btn btn-secondary">Update Camera Feed</button>
+        </div>
+      </div>
+
+      <!-- Right: Department Infection Control Rules & Protocol -->
+      <div class="sidebar">
+        <div class="sidebar-card">
+          <div class="card-header">
+            <div class="card-title">Infection Control Policy</div>
+            <span style="font-size: 0.75rem; color: var(--status-violation); font-weight: 700;">{{ department.alert_severity }}</span>
+          </div>
+          <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">CLINICAL DESCRIPTION</div>
+              <div style="font-size: 0.85rem; margin-top: 0.25rem;">{{ department.description }}</div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ENTRY GRACE PERIOD</div>
+              <div style="font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); margin-top: 0.25rem;">
+                {{ department.grace_period_seconds }} seconds
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">MANDATORY PPE REQUIREMENTS</div>
+              <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.4rem;">
+                {% for req in department.required_ppe %}
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-primary); padding: 0.45rem 0.75rem; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border-color);">
+                  <span style="color: #4ade80; font-weight: 700;">&#10003;</span>
+                  <span>{{ req }}</span>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div style="margin-top: 0.5rem;">
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">SAFETY OFFICER DISPATCH</div>
+              <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                {{ department.safety_officer_email }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("update-dept-camera-btn").addEventListener("click", async () => {
+      const src = document.getElementById("dept-camera-input").value.trim();
+      if (!src) return;
+
+      const btn = document.getElementById("update-dept-camera-btn");
+      btn.disabled = true;
+      btn.textContent = "Updating...";
+
+      try {
+        const res = await fetch("/api/departments/{{ department.id }}/camera", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ source: src })
+        });
+        if (res.ok) {
+          alert("Department camera source successfully updated!");
+          document.getElementById("dept-stream-img").src = "/departments/{{ department.id }}/video_feed?t=" + Date.now();
+        } else {
+          alert("Failed to update camera source.");
+        }
+      } catch (e) {
+        alert("Error: " + e);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Update Camera Feed";
+      }
+    });
+  </script>
+</body>
+</html>
+

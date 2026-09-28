@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital PPE Compliance Monitor | Multi-Department Surveillance Wall</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .dept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .dept-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .dept-header {
+      padding: 0.85rem 1.25rem;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dept-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dept-location {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .dept-video-box {
+      position: relative;
+      background-color: #000;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+    }
+    .dept-video-stream {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .dept-footer {
+      padding: 0.85rem 1.25rem;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .req-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.35rem;
+    }
+    .req-chip {
+      font-size: 0.68rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">CV</div>
+      <div>
+        <div class="brand-title">Hospital PPE Compliance AI</div>
+        <div class="brand-subtitle">{{ overview.hospital_name }} &bull; Multi-Department Surveillance Wall</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/departments" class="nav-link active">Department Wall</a>
+      <a href="/" class="nav-link">Main Control Room</a>
+      <a href="/zones" class="nav-link">Zone Policies</a>
+      <a href="/incidents" class="nav-link">Incident Log</a>
+      <a href="/analytics" class="nav-link">Analytics</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Hospital-wide Overview Summary -->
+    <div class="metrics-grid">
+      <div class="metric-card green">
+        <span class="metric-label">Hospital Overall Compliance</span>
+        <span class="metric-value">{{ overview.hospital_compliance_rate }}%</span>
+        <span class="metric-detail">Across all clinical departments</span>
+      </div>
+      <div class="metric-card blue">
+        <span class="metric-label">Monitored Departments</span>
+        <span class="metric-value">{{ overview.total_departments }}</span>
+        <span class="metric-detail">Concurrent camera pipelines</span>
+      </div>
+      <div class="metric-card amber">
+        <span class="metric-label">Active Staff &amp; Visitors</span>
+        <span class="metric-value">{{ overview.total_active_personnel }}</span>
+        <span class="metric-detail">Tracked across all wards</span>
+      </div>
+      <div class="metric-card red">
+        <span class="metric-label">Violations Today</span>
+        <span class="metric-value">{{ overview.total_violations_today }}</span>
+        <span class="metric-detail">Dispatched to nurse stations</span>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; margin-bottom: 0.5rem;">
+      <h2 style="font-size: 1.2rem; font-weight: 700;">Live Multi-Department Camera Matrix</h2>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">
+        All streams updating concurrently with zero-latency threaded capture
+      </div>
+    </div>
+
+    <!-- Multi-Department Video Grid -->
+    <div class="dept-grid">
+      {% for dept in overview.departments %}
+      <div class="dept-card">
+        <div class="dept-header">
+          <div>
+            <div class="dept-title">
+              <span class="zone-chip" style="background: rgba(6, 182, 212, 0.2); color: #06b6d4; border: 1px solid #06b6d4;">
+                {{ dept.code }}
+              </span>
+              <span>{{ dept.name }}</span>
+            </div>
+            <div class="dept-location">{{ dept.building }} &bull; {{ dept.floor }}</div>
+          </div>
+          <div>
+            {% if dept.risk_level == 'CRITICAL' %}
+              <span style="font-size: 0.72rem; font-weight: 700; color: var(--status-violation); background: rgba(239, 68, 68, 0.2); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--status-violation);">
+                CRITICAL STERILE
+              </span>
+            {% elif dept.risk_level == 'HIGH' %}
+              <span style="font-size: 0.72rem; font-weight: 700; color: #f97316; background: rgba(249, 115, 22, 0.2); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid #f97316;">
+                HIGH ISOLATION
+              </span>
+            {% else %}
+              <span style="font-size: 0.72rem; font-weight: 700; color: var(--status-grace); background: rgba(245, 158, 11, 0.2); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--status-grace);">
+                MEDIUM RISK
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="dept-video-box">
+          <img src="/departments/{{ dept.id }}/video_feed" alt="{{ dept.name }} Stream" class="dept-video-stream">
+        </div>
+
+        <div style="padding: 0.75rem 1.25rem; background: var(--bg-card); font-size: 0.8rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <span style="color: var(--text-muted); font-size: 0.75rem;">Mandatory PPE Requirements:</span>
+            <span style="font-weight: 700; color: #4ade80;">Compliance: {{ dept.compliance_rate }}%</span>
+          </div>
+          <div class="req-chips">
+            {% for r in dept.required_ppe %}
+              <span class="req-chip">&bull; {{ r }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="dept-footer">
+          <div style="font-size: 0.75rem; color: var(--text-muted);">
+            Nurse Station: <strong style="color: var(--text-primary);">{{ dept.nurse_station }}</strong>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <a href="/departments/{{ dept.id }}" class="btn btn-secondary" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;">
+              Deep Dive &amp; Camera
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
+
