@@ -115,9 +115,9 @@ async def index_view(request: Request):
     # Default to ICU (icu-01) as in reference mockup, or first department
     default_dept = next((d for d in depts if d["id"] == "icu"), depts[0] if depts else None)
     return templates.TemplateResponse(
-        request=request,
-        name="index.html",
-        context={
+        "index.html",
+        {
+            "request": request,
             "hospital_name": "CityCare Hospital",
             "departments": depts,
             "default_dept": default_dept,
@@ -130,9 +130,9 @@ async def index_view(request: Request):
 @app.get("/zones", response_class=HTMLResponse)
 async def zones_view(request: Request):
     return templates.TemplateResponse(
-        request=request,
-        name="zones.html",
-        context={
+        "zones.html",
+        {
+            "request": request,
             "zones": pipeline.zone_manager.get_all_zones()
         }
     )
@@ -141,9 +141,9 @@ async def zones_view(request: Request):
 @app.get("/incidents", response_class=HTMLResponse)
 async def incidents_view(request: Request):
     return templates.TemplateResponse(
-        request=request,
-        name="incidents.html",
-        context={
+        "incidents.html",
+        {
+            "request": request,
             "incidents": pipeline.alert_manager.get_recent_incidents(100)
         }
     )
@@ -152,9 +152,9 @@ async def incidents_view(request: Request):
 @app.get("/analytics", response_class=HTMLResponse)
 async def analytics_view(request: Request):
     return templates.TemplateResponse(
-        request=request,
-        name="analytics.html",
-        context={
+        "analytics.html",
+        {
+            "request": request,
             "stats": pipeline.alert_manager.get_analytics_stats()
         }
     )
@@ -164,9 +164,9 @@ async def analytics_view(request: Request):
 @app.get("/departments", response_class=HTMLResponse)
 async def departments_wall_view(request: Request):
     return templates.TemplateResponse(
-        request=request,
-        name="departments.html",
-        context={
+        "departments.html",
+        {
+            "request": request,
             "overview": department_manager.get_hospital_overview()
         }
     )
@@ -178,9 +178,9 @@ async def department_detail_view(request: Request, dept_id: str):
     if not dept:
         raise HTTPException(status_code=404, detail="Department not found")
     return templates.TemplateResponse(
-        request=request,
-        name="department_detail.html",
-        context={
+        "department_detail.html",
+        {
+            "request": request,
             "department": dept.to_dict()
         }
     )

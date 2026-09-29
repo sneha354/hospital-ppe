@@ -17,6 +17,7 @@ import numpy as np
 
 from core.compliance import ComplianceResult, ComplianceState
 from core.tracker import TrackedPerson
+from core.database import HospitalDatabase
 
 
 class IncidentStatus(str, Enum):
@@ -60,7 +61,7 @@ class Incident:
 class AlertManager:
     """
     Manages violation alerting, episode deduplication, snapshot archiving with privacy blurring,
-    incident lifecycle transitions, and compliance telemetry.
+    incident lifecycle transitions, and compliance telemetry with SQLite backing.
     """
 
     def __init__(
@@ -79,6 +80,9 @@ class AlertManager:
         os.makedirs(self.snapshot_dir, exist_ok=True)
         os.makedirs(self.log_dir, exist_ok=True)
 
+        # Initialize SQLite database
+        self.db = HospitalDatabase(os.path.join(log_dir, "hospital_ppe.db"))
+
         self.incidents: List[Incident] = []
         self._load_existing_incidents()
 
@@ -92,35 +96,64 @@ class AlertManager:
         self.violation_evaluations: int = 0
 
     def _load_existing_incidents(self):
+        # First attempt loading from SQLite database
+        try:
+            db_records = self.db.get_recent_incidents(limit=500)
+            if db_records:
+                for item in db_records:
+                    self.incidents.append(Incident(**item))
+                return
+        except Exception as e:
+            print(f"[AlertManager] Notice: SQLite load fallback to JSON: {e}")
+
+        # Fallback to JSON file if DB is empty or fresh
         if os.path.exists(self.log_file):
             try:
                 with open(self.log_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    for item in data:
-                        # Support backward compatibility with legacy schema
-                        if "status" not in item:
-                            item["status"] = "RESOLVED"
-                        if "episode_id" not in item:
-                            item["episode_id"] = item.get("id")
-                        if "duration_seconds" not in item:
-                            item["duration_seconds"] = item.get("dwell_seconds", 0.0)
-                        if "acknowledged_by" not in item:
-                            item["acknowledged_by"] = None
-                        if "acknowledged_at" not in item:
-                            item["acknowledged_at"] = None
-                        if "resolved_by" not in item:
-                            item["resolved_by"] = None
-                        if "resolved_at" not in item:
-                            item["resolved_at"] = None
-                        if "notes" not in item:
-                            item["notes"] = ""
-                        if "last_seen_timestamp" not in item:
-                            item["last_seen_timestamp"] = item.get("timestamp")
-                        self.incidents.append(Incident(**item))
+                    content = f.read().strip()
+                    if content:
+                        data = json.loads(content)
+                        for item in data:
+                            if "status" not in item:
+                                item["status"] = "RESOLVED"
+                            if "episode_id" not in item:
+                                item["episode_id"] = item.get("id")
+                            if "duration_seconds" not in item:
+                                item["duration_seconds"] = item.get("dwell_seconds", 0.0)
+                            if "acknowledged_by" not in item:
+                                item["acknowledged_by"] = None
+                            if "acknowledged_at" not in item:
+                                item["acknowledged_at"] = None
+                            if "resolved_by" not in item:
+                                item["resolved_by"] = None
+                            if "resolved_at" not in item:
+                                item["resolved_at"] = None
+                            if "notes" not in item:
+                                item["notes"] = ""
+                            if "last_seen_timestamp" not in item:
+                                item["last_seen_timestamp"] = item.get("timestamp")
+                            inc = Incident(**item)
+                            self.incidents.append(inc)
+                            # Migrate to SQLite
+                            try:
+                                self.db.insert_or_update_incident(inc.to_dict())
+                            except Exception:
+                                pass
             except Exception as e:
                 print(f"[AlertManager] Warning loading incidents log: {e}")
 
-    def _save_incidents(self):
+    def _save_incidents(self, specific_incident: Optional[Incident] = None):
+        # 1. Update SQLite Database
+        try:
+            if specific_incident:
+                self.db.insert_or_update_incident(specific_incident.to_dict())
+            else:
+                for inc in self.incidents[:50]:  # sync recent incidents
+                    self.db.insert_or_update_incident(inc.to_dict())
+        except Exception as e:
+            print(f"[AlertManager] Warning saving to SQLite: {e}")
+
+        # 2. Sync to JSON for legacy and audit export compatibility
         try:
             with open(self.log_file, "w", encoding="utf-8") as f:
                 json.dump([inc.to_dict() for inc in self.incidents], f, indent=2)

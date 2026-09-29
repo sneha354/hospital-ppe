@@ -3,115 +3,230 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hospital PPE Compliance Monitor | Infection Control Analytics</title>
+  <title>SafeCare | Infection Control &amp; Safety Analytics</title>
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard_safecare.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .chart-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-    }
-    .chart-wrapper {
-      position: relative;
-      height: 280px;
-      width: 100%;
-      margin-top: 1rem;
-    }
-  </style>
 </head>
-<body>
-  <!-- Header / Navigation -->
-  <nav class="navbar">
-    <div class="brand">
-      <div class="brand-icon">CV</div>
-      <div>
-        <div class="brand-title">Hospital PPE Compliance AI</div>
-        <div class="brand-subtitle">Infection Control &amp; Safety Analytics</div>
-      </div>
-    </div>
-    <div class="nav-links">
-      <a href="/" class="nav-link">Live Monitor</a>
-      <a href="/zones" class="nav-link">Zone Policies</a>
-      <a href="/incidents" class="nav-link">Incident Log</a>
-      <a href="/analytics" class="nav-link active">Analytics</a>
-    </div>
-  </nav>
-
-  <div class="container">
-    <!-- Top Executive Summary Cards -->
-    <div class="metrics-grid">
-      <div class="metric-card green">
-        <span class="metric-label">Hospital Compliance Rate</span>
-        <span class="metric-value">{{ stats.compliance_rate_percent }}%</span>
-        <span class="metric-detail">{{ stats.compliant_evaluations }} compliant checks</span>
-      </div>
-      <div class="metric-card red">
-        <span class="metric-label">Logged Violations</span>
-        <span class="metric-value">{{ stats.total_incidents }}</span>
-        <span class="metric-detail">{{ stats.severity_distribution.get('CRITICAL', 0) }} Critical / {{ stats.severity_distribution.get('WARNING', 0) }} Warning</span>
-      </div>
-      <div class="metric-card blue">
-        <span class="metric-label">Total Surveillance Checks</span>
-        <span class="metric-value">{{ stats.total_evaluations }}</span>
-        <span class="metric-detail">Continuous frame evaluations</span>
-      </div>
-      <div class="metric-card amber">
-        <span class="metric-label">Improper PPE Instances</span>
-        <span class="metric-value">{{ stats.partial_evaluations }}</span>
-        <span class="metric-detail">e.g. Mask on chin / exposed nose</span>
-      </div>
-    </div>
-
-    <!-- Charts Grid -->
-    <div class="charts-grid">
-      <!-- Chart 1: Violations by PPE Category -->
-      <div class="chart-card">
-        <div class="card-title">Missing PPE Distribution by Category</div>
-        <div class="chart-wrapper">
-          <canvas id="items-chart"></canvas>
+<body class="safecare-body">
+  <div class="safecare-app">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="safecare-sidebar">
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-cross">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SafeCare</span>
+          <span class="brand-sub">PPE Monitoring System</span>
         </div>
       </div>
 
-      <!-- Chart 2: Violations by Hospital Zone -->
-      <div class="chart-card">
-        <div class="card-title">Violations by Hospital Department / Zone</div>
-        <div class="chart-wrapper">
-          <canvas id="zones-chart"></canvas>
-        </div>
-      </div>
+      <!-- Nav Menu -->
+      <nav class="sidebar-menu">
+        <a href="/" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="/departments" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+          </svg>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="/zones" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
+          </svg>
+          <span>Areas &amp; Policies</span>
+        </a>
+        <a href="/incidents" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg>
+          <span>Incidents</span>
+          <span class="menu-badge" id="sidebar-incident-badge">3</span>
+        </a>
+        <a href="/analytics" class="menu-item active">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+          </svg>
+          <span>Reports</span>
+        </a>
+      </nav>
 
-      <!-- Chart 3: Compliance Status Breakdown -->
-      <div class="chart-card">
-        <div class="card-title">Inspection Status Breakdown</div>
-        <div class="chart-wrapper">
-          <canvas id="breakdown-chart"></canvas>
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="footer-hospital-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-3H7v-2h3V9h2v3h3v2h-3v3z"/>
+          </svg>
+        </div>
+        <div class="footer-tagline">
+          <span>Safer People</span>
+          <span>Healthier Tomorrow</span>
         </div>
       </div>
+    </aside>
 
-      <!-- Chart 4: Severity Distribution -->
-      <div class="chart-card">
-        <div class="card-title">Incident Severity Breakdown</div>
-        <div class="chart-wrapper">
-          <canvas id="severity-chart"></canvas>
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="safecare-main">
+      
+      <!-- TOP HEADER BAR -->
+      <header class="safecare-topbar">
+        <div class="topbar-title-area">
+          <button class="mobile-sidebar-toggle" id="sidebar-toggle-btn" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+          </button>
+          <h1 class="hospital-name">{{ hospital_name | default("CityCare Hospital") }}</h1>
+          <span class="breadcrumb-sep">&gt;</span>
+          <span class="hospital-sub">Infection Control &amp; Safety Analytics</span>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Live Date & Clock -->
+          <div class="topbar-clock" id="live-clock">
+            Tue, 15 Apr 2025 11:42:18 AM
+          </div>
+
+          <!-- Notification Bell -->
+          <a href="/incidents" class="topbar-notif-btn" title="View Active Incidents">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span class="notif-badge" id="topbar-notif-count">3</span>
+          </a>
+
+          <!-- User Profile -->
+          <div class="topbar-user">
+            <div class="user-avatar">AS</div>
+            <div class="user-meta">
+              <span class="user-name">Admin</span>
+              <span class="user-role">Hospital Administrator</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Executive Summary KPI Cards -->
+        <section class="safecare-metrics" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap green-bg">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-value" style="color: var(--safecare-green);">{{ stats.compliance_rate_percent }}%</span>
+              <span class="kpi-label">Compliance Rate</span>
+              <span style="font-size: 0.72rem; color: var(--safecare-text-dim);">{{ stats.compliant_evaluations }} compliant checks</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap red-bg">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-value" style="color: var(--safecare-red);">{{ stats.total_incidents }}</span>
+              <span class="kpi-label">Logged Violations</span>
+              <span style="font-size: 0.72rem; color: var(--safecare-text-dim);">{{ stats.severity_distribution.get('CRITICAL', 0) }} Critical / {{ stats.severity_distribution.get('WARNING', 0) }} Warning</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap blue-bg">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-value">{{ stats.total_evaluations }}</span>
+              <span class="kpi-label">Total Surveillance Checks</span>
+              <span style="font-size: 0.72rem; color: var(--safecare-text-dim);">Continuous frame evaluations</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap" style="background-color: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+              </svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-value" style="color: #f59e0b;">{{ stats.partial_evaluations }}</span>
+              <span class="kpi-label">Improper PPE Instances</span>
+              <span style="font-size: 0.72rem; color: var(--safecare-text-dim);">e.g. Mask on chin / exposed nose</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <!-- Chart 1: Violations by PPE Category -->
+          <div class="chart-card">
+            <div class="dept-title">
+              <span class="zone-chip" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">PPE</span>
+              <span>Missing PPE Distribution by Category</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="items-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Violations by Hospital Zone -->
+          <div class="chart-card">
+            <div class="dept-title">
+              <span class="zone-chip" style="background: rgba(37, 99, 235, 0.2); color: #38bdf8; border: 1px solid #38bdf8;">ZONES</span>
+              <span>Violations by Hospital Department / Zone</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="zones-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 3: Compliance Status Breakdown -->
+          <div class="chart-card">
+            <div class="dept-title">
+              <span class="zone-chip" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399;">STATUS</span>
+              <span>Inspection Status Breakdown</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="breakdown-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 4: Severity Distribution -->
+          <div class="chart-card">
+            <div class="dept-title">
+              <span class="zone-chip" style="background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid #a78bfa;">SEVERITY</span>
+              <span>Incident Severity Breakdown</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="severity-chart"></canvas>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 
   <script>
     const analyticsData = {{ stats | tojson }};
   </script>
+  <script src="/static/js/common.js"></script>
   <script src="/static/js/analytics.js"></script>
 </body>
 </html>
-

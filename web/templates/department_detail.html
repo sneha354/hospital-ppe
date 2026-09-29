@@ -3,116 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ department.name }} | Department Control Room</title>
+  <title>SafeCare | {{ department.name }} Control Room</title>
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard_safecare.css">
 </head>
-<body>
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="brand">
-      <div class="brand-icon">CV</div>
-      <div>
-        <div class="brand-title">Hospital PPE Compliance AI</div>
-        <div class="brand-subtitle">Department Control Room &bull; {{ department.name }}</div>
-      </div>
-    </div>
-    <div class="nav-links">
-      <a href="/departments" class="nav-link">Department Wall</a>
-      <a href="/" class="nav-link">Main Control Room</a>
-      <a href="/zones" class="nav-link">Zone Policies</a>
-      <a href="/incidents" class="nav-link">Incident Log</a>
-      <a href="/analytics" class="nav-link">Analytics</a>
-    </div>
-  </nav>
-
-  <div class="container">
-    <!-- Breadcrumb & Header -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-      <div>
-        <a href="/departments" style="font-size: 0.82rem; color: var(--accent-cyan); text-decoration: none;">&larr; Back to Hospital Department Wall</a>
-        <h1 style="font-size: 1.5rem; font-weight: 700; margin-top: 0.35rem;">
-          [{{ department.code }}] {{ department.name }}
-        </h1>
-        <div style="font-size: 0.85rem; color: var(--text-muted);">
-          {{ department.building }} &bull; {{ department.floor }} &bull; Risk: <strong>{{ department.risk_level }}</strong>
+<body class="safecare-body">
+  <div class="safecare-app">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="safecare-sidebar">
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-cross">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SafeCare</span>
+          <span class="brand-sub">PPE Monitoring System</span>
         </div>
       </div>
-      <div style="text-align: right;">
-        <div style="font-size: 0.8rem; color: var(--text-muted);">Nurse Station Contact:</div>
-        <div style="font-weight: 700; font-size: 0.95rem;">{{ department.nurse_station_contact }}</div>
-      </div>
-    </div>
 
-    <!-- Main Layout: Video + Controls -->
-    <div class="dashboard-layout">
-      <!-- Left: Full Live Video Feed -->
-      <div class="video-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span class="live-badge"><span class="live-dot"></span> LIVE FEED</span>
-            <span>{{ department.camera_type }} Stream</span>
+      <!-- Nav Menu -->
+      <nav class="sidebar-menu">
+        <a href="/" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="/departments" class="menu-item active">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+          </svg>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="/zones" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
+          </svg>
+          <span>Areas &amp; Policies</span>
+        </a>
+        <a href="/incidents" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg>
+          <span>Incidents</span>
+          <span class="menu-badge" id="sidebar-incident-badge">3</span>
+        </a>
+        <a href="/analytics" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+          </svg>
+          <span>Reports</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="footer-hospital-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-3H7v-2h3V9h2v3h3v2h-3v3z"/>
+          </svg>
+        </div>
+        <div class="footer-tagline">
+          <span>Safer People</span>
+          <span>Healthier Tomorrow</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="safecare-main">
+      
+      <!-- TOP HEADER BAR -->
+      <header class="safecare-topbar">
+        <div class="topbar-title-area">
+          <button class="mobile-sidebar-toggle" id="sidebar-toggle-btn" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+          </button>
+          <h1 class="hospital-name">{{ department.name }}</h1>
+          <span class="breadcrumb-sep">&gt;</span>
+          <span class="hospital-sub">Department Clinical Control Room</span>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Live Date & Clock -->
+          <div class="topbar-clock" id="live-clock">
+            Tue, 15 Apr 2025 11:42:18 AM
           </div>
-          <div style="font-size: 0.8rem; color: var(--text-secondary);">
-            Source: {{ department.camera_source }}
-          </div>
-        </div>
 
-        <div class="video-wrapper">
-          <img src="/departments/{{ department.id }}/video_feed" alt="{{ department.name }} Live Feed" class="video-stream" id="dept-stream-img">
-        </div>
+          <!-- Notification Bell -->
+          <a href="/incidents" class="topbar-notif-btn" title="View Active Incidents">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span class="notif-badge" id="topbar-notif-count">3</span>
+          </a>
 
-        <!-- Camera Ingestion Toolbar -->
-        <div class="stream-controls">
-          <label style="font-size: 0.82rem; color: var(--text-secondary); font-weight: 600;">Bind Live RTSP / IP Camera:</label>
-          <input type="text" id="dept-camera-input" class="text-input" style="flex: 1; min-width: 260px;" placeholder="rtsp://admin:pass@192.168.1.100:554/live" value="{{ department.camera_source }}">
-          <button id="update-dept-camera-btn" class="btn btn-secondary">Update Camera Feed</button>
-        </div>
-      </div>
-
-      <!-- Right: Department Infection Control Rules & Protocol -->
-      <div class="sidebar">
-        <div class="sidebar-card">
-          <div class="card-header">
-            <div class="card-title">Infection Control Policy</div>
-            <span style="font-size: 0.75rem; color: var(--status-violation); font-weight: 700;">{{ department.alert_severity }}</span>
-          </div>
-          <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;">
-            <div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">CLINICAL DESCRIPTION</div>
-              <div style="font-size: 0.85rem; margin-top: 0.25rem;">{{ department.description }}</div>
+          <!-- User Profile -->
+          <div class="topbar-user">
+            <div class="user-avatar">AS</div>
+            <div class="user-meta">
+              <span class="user-name">Admin</span>
+              <span class="user-role">Hospital Administrator</span>
             </div>
+          </div>
+        </div>
+      </header>
 
-            <div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ENTRY GRACE PERIOD</div>
-              <div style="font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); margin-top: 0.25rem;">
-                {{ department.grace_period_seconds }} seconds
+      <!-- Page Content -->
+      <div class="page-container">
+        <!-- Breadcrumb & Header Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <a href="/departments" style="font-size: 0.82rem; color: var(--safecare-blue-light); text-decoration: none;">&larr; Back to Hospital Department Wall</a>
+            <h2 style="font-size: 1.4rem; font-weight: 700; margin-top: 0.35rem; color: #ffffff;">
+              [{{ department.code }}] {{ department.name }}
+            </h2>
+            <div style="font-size: 0.82rem; color: var(--safecare-text-dim);">
+              {{ department.building }} &bull; {{ department.floor }} &bull; Risk: <strong style="color: var(--safecare-text-main);">{{ department.risk_level }}</strong>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.78rem; color: var(--safecare-text-dim);">Nurse Station Contact:</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--safecare-blue-light);">{{ department.nurse_station_contact }}</div>
+          </div>
+        </div>
+
+        <!-- Main Layout: Video + Controls -->
+        <div class="dashboard-layout">
+          <!-- Left: Full Live Video Feed -->
+          <div class="content-card">
+            <div class="dept-header">
+              <div class="dept-title">
+                <span class="live-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem; display: flex; align-items: center; gap: 0.35rem;">
+                  <span class="live-dot" style="width: 7px; height: 7px; background: #10b981; border-radius: 50%;"></span> LIVE
+                </span>
+                <span>{{ department.camera_type }} Stream</span>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--safecare-text-dim);">
+                Source: {{ department.camera_source }}
               </div>
             </div>
 
-            <div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">MANDATORY PPE REQUIREMENTS</div>
-              <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.4rem;">
-                {% for req in department.required_ppe %}
-                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-primary); padding: 0.45rem 0.75rem; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--border-color);">
-                  <span style="color: #4ade80; font-weight: 700;">&#10003;</span>
-                  <span>{{ req }}</span>
+            <div class="dept-video-box">
+              <img src="/departments/{{ department.id }}/video_feed" alt="{{ department.name }} Live Feed" class="dept-video-stream" id="dept-stream-img">
+            </div>
+
+            <!-- Camera Ingestion Toolbar -->
+            <div style="padding: 1rem 1.25rem; background: #0d1627; border-top: 1px solid var(--safecare-card-border); display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+              <label for="dept-camera-input" style="font-size: 0.8rem; color: var(--safecare-text-sub); font-weight: 600;">Bind Live RTSP / IP Camera:</label>
+              <input type="text" id="dept-camera-input" class="search-input" style="flex: 1; min-width: 260px;" placeholder="rtsp://admin:pass@192.168.1.100:554/live" value="{{ department.camera_source }}">
+              <button id="update-dept-camera-btn" class="btn btn-secondary" style="font-size: 0.78rem;">Update Camera Feed</button>
+            </div>
+          </div>
+
+          <!-- Right: Department Infection Control Rules & Protocol -->
+          <div class="sidebar-card">
+            <div class="dept-header">
+              <div class="dept-title">Infection Control Policy</div>
+              <span class="status-badge status-new">{{ department.alert_severity }}</span>
+            </div>
+            <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div>
+                <div style="font-size: 0.75rem; color: var(--safecare-text-dim); font-weight: 600; text-transform: uppercase;">Clinical Description</div>
+                <div style="font-size: 0.84rem; margin-top: 0.35rem; color: var(--safecare-text-sub); line-height: 1.4;">{{ department.description }}</div>
+              </div>
+
+              <div>
+                <div style="font-size: 0.75rem; color: var(--safecare-text-dim); font-weight: 600; text-transform: uppercase;">Entry Grace Period</div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: var(--safecare-blue-light); margin-top: 0.25rem;">
+                  {{ department.grace_period_seconds }} seconds
                 </div>
-                {% endfor %}
               </div>
-            </div>
 
-            <div style="margin-top: 0.5rem;">
-              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">SAFETY OFFICER DISPATCH</div>
-              <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                {{ department.safety_officer_email }}
+              <div>
+                <div style="font-size: 0.75rem; color: var(--safecare-text-dim); font-weight: 600; text-transform: uppercase;">Mandatory PPE Requirements</div>
+                <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.45rem;">
+                  {% for req in department.required_ppe %}
+                  <div style="display: flex; align-items: center; gap: 0.5rem; background: #0b1322; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.82rem; border: 1px solid var(--safecare-card-border);">
+                    <span style="color: #4ade80; font-weight: 700;">&#10003;</span>
+                    <span>{{ req }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div style="margin-top: 0.5rem; border-top: 1px solid var(--safecare-card-border); padding-top: 0.75rem;">
+                <div style="font-size: 0.75rem; color: var(--safecare-text-dim); font-weight: 600; text-transform: uppercase;">Safety Officer Dispatch</div>
+                <div style="font-size: 0.82rem; color: var(--safecare-text-sub); margin-top: 0.25rem;">
+                  {{ department.safety_officer_email }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 
+  <script src="/static/js/common.js"></script>
   <script>
     document.getElementById("update-dept-camera-btn").addEventListener("click", async () => {
       const src = document.getElementById("dept-camera-input").value.trim();
@@ -144,4 +238,3 @@
   </script>
 </body>
 </html>
-

@@ -9,33 +9,45 @@ from datetime import datetime
 import json
 import os
 from core.alert_manager import Incident
+from core.database import HospitalDatabase
 
 
 class HospitalAlertDispatcher:
     """
     Dispatches infection control alerts to department nurse stations,
-    safety officer pagers, and hospital audit systems.
+    safety officer pagers, and hospital audit systems with SQLite storage.
     """
 
-    def __init__(self, log_path: str = "data/incidents/hospital_dispatches.json"):
+    def __init__(self, log_path: str = "data/incidents/hospital_dispatches.json", db_path: str = "data/incidents/hospital_ppe.db"):
         self.log_path = log_path
         self.facility_id = "MGH-MAIN-01"
         self.dispatches: List[Dict[str, Any]] = []
         os.makedirs(os.path.dirname(os.path.abspath(log_path)), exist_ok=True)
+        self.db = HospitalDatabase(db_path)
         self._load_dispatches()
 
     def _load_dispatches(self):
         if os.path.exists(self.log_path):
             try:
                 with open(self.log_path, "r", encoding="utf-8") as f:
-                    self.dispatches = json.load(f)
+                    content = f.read().strip()
+                    if content:
+                        self.dispatches = json.loads(content)
             except Exception:
                 self.dispatches = []
 
-    def _save_dispatches(self):
+    def _save_dispatches(self, latest_payload: Optional[Dict[str, Any]] = None):
+        # 1. Save to SQLite
+        try:
+            if latest_payload:
+                self.db.insert_dispatch(latest_payload)
+        except Exception as e:
+            print(f"[HospitalAlertDispatcher] SQLite write warning: {e}")
+
+        # 2. Sync JSON
         try:
             with open(self.log_path, "w", encoding="utf-8") as f:
-                json.dump(self.dispatches, f, indent=2)
+                json.dump(self.dispatches[:100], f, indent=2)
         except Exception as e:
             print(f"[HospitalAlertDispatcher] Error saving dispatches: {e}")
 
@@ -90,7 +102,7 @@ class HospitalAlertDispatcher:
         }
 
         self.dispatches.insert(0, dispatch_payload)
-        self._save_dispatches()
+        self._save_dispatches(dispatch_payload)
         return dispatch_payload
 
     def get_shift_audit_summary(self) -> Dict[str, Any]:

@@ -3,196 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hospital PPE Compliance Monitor | Zone Policy Editor</title>
+  <title>SafeCare | Hospital Zone &amp; Policy Management</title>
   <link rel="stylesheet" href="/static/css/style.css">
-  <style>
-    .editor-layout {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 1.5rem;
-    }
-    .canvas-container {
-      position: relative;
-      background: #000;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      width: 100%;
-      aspect-ratio: 16 / 9;
-    }
-    #zone-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      cursor: crosshair;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.35rem;
-      font-weight: 600;
-    }
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-      margin-top: 0.35rem;
-    }
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.82rem;
-      background: var(--bg-primary);
-      padding: 0.4rem 0.6rem;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-    }
-  </style>
+  <link rel="stylesheet" href="/static/css/dashboard_safecare.css">
 </head>
-<body>
-  <!-- Header / Navigation -->
-  <nav class="navbar">
-    <div class="brand">
-      <div class="brand-icon">CV</div>
-      <div>
-        <div class="brand-title">Hospital PPE Compliance AI</div>
-        <div class="brand-subtitle">Zone &amp; Policy Management</div>
-      </div>
-    </div>
-    <div class="nav-links">
-      <a href="/" class="nav-link">Live Monitor</a>
-      <a href="/zones" class="nav-link active">Zone Policies</a>
-      <a href="/incidents" class="nav-link">Incident Log</a>
-      <a href="/analytics" class="nav-link">Analytics</a>
-    </div>
-  </nav>
-
-  <div class="container">
-    <div class="editor-layout">
-      <!-- Left: Interactive Canvas Editor -->
-      <div class="video-card">
-        <div class="card-header">
-          <div class="card-title">
-            <span>Surveillance ROI Polygon Editor</span>
-          </div>
-          <div style="display: flex; gap: 0.5rem;">
-            <button id="refresh-frame-btn" class="btn btn-secondary" style="font-size: 0.78rem;">Grab New Frame</button>
-            <button id="clear-polygon-btn" class="btn btn-secondary" style="font-size: 0.78rem;">Clear Points</button>
-          </div>
+<body class="safecare-body">
+  <div class="safecare-app">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="safecare-sidebar">
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-logo-cross">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+          </svg>
         </div>
-
-        <div class="canvas-container">
-          <canvas id="zone-canvas" width="1280" height="720"></canvas>
-        </div>
-
-        <div style="padding: 0.8rem 1.25rem; font-size: 0.8rem; color: var(--text-muted); background: var(--bg-secondary);">
-          Tip: Click on the camera frame to place polygon boundary points. Click the first point again or click "Complete Polygon" to close the zone.
+        <div class="brand-text">
+          <span class="brand-title">SafeCare</span>
+          <span class="brand-sub">PPE Monitoring System</span>
         </div>
       </div>
 
-      <!-- Right: Policy & Requirement Configuration Panel -->
-      <div class="sidebar-card" style="max-height: none; padding: 1.25rem;">
-        <div class="card-title" style="margin-bottom: 1.25rem;">Zone Policy Details</div>
+      <!-- Nav Menu -->
+      <nav class="sidebar-menu">
+        <a href="/" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="/departments" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+          </svg>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="/zones" class="menu-item active">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
+          </svg>
+          <span>Areas &amp; Policies</span>
+        </a>
+        <a href="/incidents" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+          </svg>
+          <span>Incidents</span>
+          <span class="menu-badge" id="sidebar-incident-badge">3</span>
+        </a>
+        <a href="/analytics" class="menu-item">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+          </svg>
+          <span>Reports</span>
+        </a>
+      </nav>
 
-        <form id="zone-form">
-          <div class="form-group">
-            <label>Zone Name</label>
-            <input type="text" id="zone-name" class="text-input" style="width: 100%;" placeholder="e.g. Intensive Care Unit 01" required>
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="footer-hospital-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-3H7v-2h3V9h2v3h3v2h-3v3z"/>
+          </svg>
+        </div>
+        <div class="footer-tagline">
+          <span>Safer People</span>
+          <span>Healthier Tomorrow</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="safecare-main">
+      
+      <!-- TOP HEADER BAR -->
+      <header class="safecare-topbar">
+        <div class="topbar-title-area">
+          <button class="mobile-sidebar-toggle" id="sidebar-toggle-btn" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+          </button>
+          <h1 class="hospital-name">{{ hospital_name | default("CityCare Hospital") }}</h1>
+          <span class="breadcrumb-sep">&gt;</span>
+          <span class="hospital-sub">Zone &amp; Infection Policy Management</span>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Live Date & Clock -->
+          <div class="topbar-clock" id="live-clock">
+            Tue, 15 Apr 2025 11:42:18 AM
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-            <div class="form-group">
-              <label>Zone Code</label>
-              <input type="text" id="zone-code" class="text-input" style="width: 100%;" placeholder="e.g. ICU-01" required>
+          <!-- Notification Bell -->
+          <a href="/incidents" class="topbar-notif-btn" title="View Active Incidents">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <span class="notif-badge" id="topbar-notif-count">3</span>
+          </a>
+
+          <!-- User Profile -->
+          <div class="topbar-user">
+            <div class="user-avatar">AS</div>
+            <div class="user-meta">
+              <span class="user-name">Admin</span>
+              <span class="user-role">Hospital Administrator</span>
             </div>
-            <div class="form-group">
-              <label>Risk Level</label>
-              <select id="zone-risk" class="select-input" style="width: 100%;">
-                <option value="CRITICAL">CRITICAL</option>
-                <option value="HIGH">HIGH</option>
-                <option value="MEDIUM" selected>MEDIUM</option>
-                <option value="LOW">LOW</option>
-              </select>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="page-container">
+        <div class="editor-layout">
+          <!-- Left: Interactive Canvas Editor -->
+          <div class="content-card">
+            <div class="dept-header">
+              <div class="dept-title">
+                <span class="zone-chip" style="background: rgba(37, 99, 235, 0.2); color: #38bdf8; border: 1px solid #38bdf8;">ROI</span>
+                <span>Surveillance Polygon Boundary Editor</span>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button id="refresh-frame-btn" class="btn btn-secondary" style="font-size: 0.78rem;">Grab New Frame</button>
+                <button id="clear-polygon-btn" class="btn btn-secondary" style="font-size: 0.78rem;">Clear Points</button>
+              </div>
+            </div>
+
+            <div class="canvas-container">
+              <canvas id="zone-canvas" width="1280" height="720"></canvas>
+            </div>
+
+            <div style="padding: 0.85rem 1.25rem; font-size: 0.8rem; color: var(--safecare-text-sub); background: #0d1627; border-top: 1px solid var(--safecare-card-border);">
+              Tip: Click on the camera frame to place polygon boundary points. Click the first point again to close the zone.
             </div>
           </div>
 
-          <div class="form-group">
-            <label>Mandatory Medical PPE Requirements</label>
-            <div class="checkbox-grid">
-              <label class="checkbox-item">
-                <input type="checkbox" name="req_ppe" value="face_mask" checked>
-                <span>Face Mask / N95</span>
-              </label>
-              <label class="checkbox-item">
-                <input type="checkbox" name="req_ppe" value="eye_protection">
-                <span>Eye Protection / Shield</span>
-              </label>
-              <label class="checkbox-item">
-                <input type="checkbox" name="req_ppe" value="gown">
-                <span>Medical Gown</span>
-              </label>
-              <label class="checkbox-item">
-                <input type="checkbox" name="req_ppe" value="gloves">
-                <span>Medical Gloves</span>
-              </label>
-              <label class="checkbox-item">
-                <input type="checkbox" name="req_ppe" value="head_cover">
-                <span>Bouffant Cap</span>
-              </label>
-              <label class="checkbox-item">
-                <input type="checkbox" name="req_ppe" value="shoe_covers">
-                <span>Shoe Covers</span>
-              </label>
+          <!-- Right: Policy & Requirement Configuration Panel -->
+          <div class="sidebar-card" style="padding: 1.25rem;">
+            <div class="dept-title" style="margin-bottom: 1.25rem;">
+              <span class="zone-chip" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399;">CONFIG</span>
+              <span>Zone Policy Details</span>
             </div>
-          </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-            <div class="form-group">
-              <label>Grace Period (seconds)</label>
-              <input type="number" id="zone-grace" class="text-input" style="width: 100%;" value="3.0" step="0.5" min="0">
+            <form id="zone-form">
+              <div class="form-group">
+                <label>Zone Name</label>
+                <input type="text" id="zone-name" class="search-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. Intensive Care Unit 01" required>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                  <label>Zone Code</label>
+                  <input type="text" id="zone-code" class="search-input" style="width: 100%; box-sizing: border-box;" placeholder="e.g. ICU-01" required>
+                </div>
+                <div class="form-group">
+                  <label>Risk Level</label>
+                  <select id="zone-risk" class="filter-select" style="width: 100%; box-sizing: border-box;">
+                    <option value="CRITICAL">CRITICAL</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="MEDIUM" selected>MEDIUM</option>
+                    <option value="LOW">LOW</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Mandatory Medical PPE Requirements</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="req_ppe" value="face_mask" checked>
+                    <span>Face Mask / N95</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="req_ppe" value="eye_protection">
+                    <span>Eye Protection</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="req_ppe" value="gown">
+                    <span>Medical Gown</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="req_ppe" value="gloves">
+                    <span>Medical Gloves</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="req_ppe" value="head_cover">
+                    <span>Bouffant Cap</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="req_ppe" value="shoe_covers">
+                    <span>Shoe Covers</span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                  <label>Grace Period (seconds)</label>
+                  <input type="number" id="zone-grace" class="search-input" style="width: 100%; box-sizing: border-box;" value="3.0" step="0.5" min="0">
+                </div>
+                <div class="form-group">
+                  <label>Alert Severity</label>
+                  <select id="zone-severity" class="filter-select" style="width: 100%; box-sizing: border-box;">
+                    <option value="CRITICAL">CRITICAL</option>
+                    <option value="WARNING" selected>WARNING</option>
+                    <option value="INFO">INFO</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Zone Display Color</label>
+                <input type="color" id="zone-color-picker" value="#ef4444" style="width: 100%; height: 38px; border-radius: 6px; border: 1px solid var(--safecare-card-border); background: #0b1322; cursor: pointer;">
+              </div>
+
+              <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+                <button type="button" id="save-zone-btn" class="btn btn-success" style="flex: 1; padding: 0.6rem;">Save Zone Policy</button>
+                <button type="button" id="delete-zone-btn" class="btn btn-danger" style="display: none; padding: 0.6rem;">Delete</button>
+              </div>
+            </form>
+
+            <hr style="border: 0; border-top: 1px solid var(--safecare-card-border); margin: 1.25rem 0;">
+
+            <!-- List of existing zones -->
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem; color: #ffffff;">Active Hospital Zones</div>
+              <div id="zones-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <!-- Rendered by JS -->
+              </div>
             </div>
-            <div class="form-group">
-              <label>Alert Severity</label>
-              <select id="zone-severity" class="select-input" style="width: 100%;">
-                <option value="CRITICAL">CRITICAL</option>
-                <option value="WARNING" selected>WARNING</option>
-                <option value="INFO">INFO</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Zone Display Color</label>
-            <input type="color" id="zone-color-picker" value="#ef4444" style="width: 100%; height: 36px; border-radius: 6px; border: 1px solid var(--border-color); background: none; cursor: pointer;">
-          </div>
-
-          <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
-            <button type="button" id="save-zone-btn" class="btn btn-success" style="flex: 1;">Save Zone Policy</button>
-            <button type="button" id="delete-zone-btn" class="btn btn-danger" style="display: none;">Delete</button>
-          </div>
-        </form>
-
-        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
-
-        <!-- List of existing zones -->
-        <div>
-          <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 0.75rem;">Active Hospital Zones</div>
-          <div id="zones-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <!-- Rendered by JS -->
           </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 
+  <script src="/static/js/common.js"></script>
   <script src="/static/js/zones.js"></script>
 </body>
 </html>
-

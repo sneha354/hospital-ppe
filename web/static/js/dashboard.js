@@ -92,7 +92,8 @@ window.selectDepartment = function(deptId) {
     el.classList.toggle("active", isThisDept);
   });
   const gridTab = document.getElementById("ward-tab-grid");
-  if (gridTab) gridTab.classList.remove("active");
+  const allWardsItem = document.getElementById("camera-item-all-wards");
+  if (allWardsItem) allWardsItem.classList.remove("active");
 
   refreshSelectedDepartment();
 };
@@ -100,7 +101,7 @@ window.selectDepartment = function(deptId) {
 window.toggleMultiWardGrid = function() {
   const singleGrid = document.getElementById("safecare-single-grid");
   const multiGrid = document.getElementById("multi-ward-grid-section");
-  const gridTab = document.getElementById("ward-tab-grid");
+  const allWardsItem = document.getElementById("camera-item-all-wards");
 
   if (!singleGrid || !multiGrid) return;
 
@@ -108,13 +109,13 @@ window.toggleMultiWardGrid = function() {
   if (isGridActive) {
     multiGrid.classList.remove("active");
     singleGrid.style.display = "grid";
-    if (gridTab) gridTab.classList.remove("active");
+    if (allWardsItem) allWardsItem.classList.remove("active");
     selectDepartment(currentDeptId);
   } else {
     multiGrid.classList.add("active");
     singleGrid.style.display = "none";
-    document.querySelectorAll(".ward-tab-btn").forEach(el => el.classList.remove("active"));
-    if (gridTab) gridTab.classList.add("active");
+    document.querySelectorAll(".camera-item").forEach(el => el.classList.remove("active"));
+    if (allWardsItem) allWardsItem.classList.add("active");
   }
 };
 
@@ -549,19 +550,38 @@ window.scrollToCameras = function() {
 // --- VIDEO INSERTION & SWITCHER MODAL ---
 window.openInsertVideoModal = function() {
   const modal = document.getElementById("insert-video-modal");
-  const dept = departmentsMap[currentDeptId];
-  const targetTitle = document.getElementById("insert-modal-dept-title");
-  if (targetTitle && dept) {
-    targetTitle.textContent = `${dept.name} (${dept.code})`;
-  }
-  if (modal) modal.style.display = "flex";
-  switchVideoModalTab("demos");
-  loadSampleVideosList();
+  if (!modal) return;
+
+  try {
+    const dept = (typeof departmentsMap !== "undefined" && departmentsMap[currentDeptId]) ? departmentsMap[currentDeptId] : null;
+    const targetTitle = document.getElementById("insert-modal-dept-title");
+    if (targetTitle && dept) {
+      targetTitle.textContent = `${dept.name} (${dept.code})`;
+    }
+  } catch (e) {}
+
+  modal.classList.add("open");
+  modal.style.display = "flex";
+  modal.style.opacity = "1";
+  modal.style.pointerEvents = "auto";
+  modal.style.visibility = "visible";
+  modal.style.zIndex = "99999";
+
+  try {
+    if (typeof switchVideoModalTab === "function") switchVideoModalTab("demos");
+    if (typeof loadSampleVideosList === "function") loadSampleVideosList();
+  } catch (e) {}
 };
 
 window.closeInsertVideoModal = function() {
   const modal = document.getElementById("insert-video-modal");
-  if (modal) modal.style.display = "none";
+  if (modal) {
+    modal.classList.remove("open");
+    modal.style.display = "none";
+    modal.style.opacity = "0";
+    modal.style.pointerEvents = "none";
+    modal.style.visibility = "hidden";
+  }
 };
 
 window.switchVideoModalTab = function(tabName) {

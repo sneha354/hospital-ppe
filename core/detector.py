@@ -811,7 +811,7 @@ class DetectorFactory:
                 conf_threshold=conf_threshold,
                 inference_size=inference_size
             )
-        elif backend == "onnx" or (backend == "auto" and model_path and os.path.exists(model_path) and "yolo" in model_path.lower()):
+        elif backend == "onnx" or (backend == "auto" and model_path and os.path.exists(model_path) and model_path.lower().endswith(".onnx")):
             return ONNXYoloDetector(model_path, conf_thresh=conf_threshold)
         else:
             return HeuristicOpenCVDetector(

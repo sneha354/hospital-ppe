@@ -1,0 +1,22 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Local database and generated snapshot media
+data/incidents/snapshots/*.jpg
+data/incidents/*.db
+data/incidents/*.db-wal
+data/incidents/*.db-shm
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp

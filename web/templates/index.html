@@ -40,12 +40,6 @@
           </svg>
           <span>Live Monitoring</span>
         </a>
-        <a href="#cameras-section" class="menu-item" onclick="scrollToCameras()">
-          <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-          </svg>
-          <span>Cameras</span>
-        </a>
         <a href="/zones" class="menu-item">
           <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/>
@@ -65,7 +59,7 @@
           </svg>
           <span>Reports</span>
         </a>
-        <a href="#" class="menu-item" onclick="openCameraModal()">
+        <a href="#" class="menu-item" onclick="openAddCameraModal()">
           <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
           </svg>
@@ -93,6 +87,11 @@
       <!-- TOP HEADER BAR -->
       <header class="safecare-topbar">
         <div class="topbar-title-area">
+          <button class="mobile-sidebar-toggle" id="sidebar-toggle-btn" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+          </button>
           <h1 class="hospital-name">{{ hospital_name }}</h1>
           <span class="breadcrumb-sep">&gt;</span>
           <span class="hospital-sub">AI-powered PPE Compliance Monitoring</span>
@@ -191,37 +190,15 @@
         </div>
       </section>
 
-      <!-- WARD & CLINICAL MONITORING SECTIONS TABS -->
-      <section class="ward-tabs-bar">
-        <div class="ward-tabs-scroll">
-          {% for dept in departments %}
-          <button class="ward-tab-btn {% if default_dept and dept.id == default_dept.id %}active{% endif %}" 
-                  id="ward-tab-{{ dept.id }}"
-                  data-dept-id="{{ dept.id }}"
-                  onclick="selectDepartment('{{ dept.id }}')">
-            <span class="ward-tab-icon">
-              {% if dept.id == 'icu' %}🏥{% elif dept.id == 'gw' %}🩺{% elif dept.id == 'opd' %}🚪{% elif dept.id == 'or' %}🔬{% else %}📍{% endif %}
-            </span>
-            <div class="ward-tab-text">
-              <span class="ward-tab-title">{{ dept.name }}</span>
-              <span class="ward-tab-code">{{ dept.code }}</span>
-            </div>
-            <span class="ward-live-dot"></span>
-            <span class="ward-status-pill" id="ward-pill-{{ dept.id }}">MONITORING</span>
-          </button>
-          {% endfor %}
-          <button class="ward-tab-btn ward-tab-grid" id="ward-tab-grid" onclick="toggleMultiWardGrid()">
-            <span class="ward-tab-icon">🪟</span>
-            <div class="ward-tab-text">
-              <span class="ward-tab-title">All Wards</span>
-              <span class="ward-tab-code">4-Camera Grid</span>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      <!-- MULTI-WARD 4-CAMERA GRID (Toggled via All Wards tab) -->
+      <!-- MULTI-WARD 4-CAMERA GRID (Toggled via All Wards button) -->
       <div class="multi-ward-grid-wrapper" id="multi-ward-grid-section">
+        <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.2rem; margin-bottom: 0.25rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <span style="font-size: 1.05rem; font-weight: 700; color: #ffffff;">Hospital 4-Camera Grid Wall</span>
+            <span class="status-badge status-acknowledged">All Wards Live</span>
+          </div>
+          <button class="btn btn-secondary" onclick="toggleMultiWardGrid()" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; cursor: pointer;">&larr; Back to Control Room</button>
+        </div>
         {% for dept in departments %}
         <div class="ward-tile-card">
           <div class="ward-tile-header">
@@ -271,6 +248,18 @@
               <span class="camera-live-tag">Live</span>
             </div>
             {% endfor %}
+
+            <!-- ALL WARDS 4-CAMERA GRID ITEM AT END OF LIST -->
+            <div class="camera-item" id="camera-item-all-wards" onclick="toggleMultiWardGrid()" style="margin-top: 0.35rem; border-top: 1px dashed rgba(255, 255, 255, 0.1); padding-top: 0.65rem;">
+              <div class="camera-item-left">
+                <span class="camera-status-dot" style="background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span>
+                <div class="camera-info">
+                  <span class="camera-code" style="color: #38bdf8;">ALL WARDS</span>
+                  <span class="camera-area">4-Camera Grid</span>
+                </div>
+              </div>
+              <span class="camera-live-tag" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Grid</span>
+            </div>
           </div>
         </div>
 
@@ -795,6 +784,7 @@
     </div>
   </div>
 
-  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/common.js?v=20260929_3"></script>
+  <script src="/static/js/dashboard.js?v=20260929_3"></script>
 </body>
 </html>
